@@ -1,0 +1,62 @@
+# Git ignore
+# https://git-scm.com/docs/gitignore
+
+# Private files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Miscellaneous
+*~
+*#
+.DS_STORE
+Thumbs.db
+.netbeans
+nbproject
+.node_history
+
+# IDEs & Text Editors
+.idea
+.sublime-*
+.vscode
+.netbeans
+nbproject
+
+# Temporary files
+.tmp
+.temp
+.grunt
+.lock-wscript
+
+# Logs
+/logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+# Dependencies
+node_modules
+/.pnp
+.pnp.js
+
+# Build output
+/lib
+/dist
+build
+
+# Test output
+/.nyc_output
+/coverage
+
+# imports
+auto-imports.d.ts
+components.d.ts
+
+# files
+tmp
+examples
