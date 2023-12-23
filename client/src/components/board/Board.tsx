@@ -5,11 +5,11 @@ import { Draw, Point } from "@/types/drawing";
 import React, { useEffect } from "react";
 
 const Board: React.FunctionComponent = () => {
-  const { canvasRef, onMouseDown } = useDraw(drawLine)
+  const { canvasRef, onMouseDown, redrawCanvas } = useDraw(drawLine)
 
   useEffect(() => {
-    canvasRef.current!.width = window.innerWidth;
-    canvasRef.current!.height = window.innerHeight;
+    canvasRef.current!.width = document.body.clientWidth;
+    canvasRef.current!.height = document.body.clientHeight;
 
     window.addEventListener('resize', canvasResize);
 
@@ -19,34 +19,24 @@ const Board: React.FunctionComponent = () => {
   }, []);
 
   const canvasResize = () => {
-    canvasRef.current!.width = window.innerWidth;
-    canvasRef.current!.height = window.innerHeight;
+    redrawCanvas();
   }
 
   function drawLine ({ctx, currentPoint, prevPoint} : Draw) {
-    const { x, y }: Point = currentPoint; 
-    const lineColor = 'white';
-    const lineWidth = 5;
-
-    let startPoint = prevPoint ?? currentPoint;
     ctx.beginPath();
-    ctx.lineWidth = lineWidth;
-    ctx.strokeStyle = lineColor;
-    ctx.moveTo(startPoint.x, startPoint.y);
-    ctx.lineTo(x, y);
+    ctx.moveTo(prevPoint!.x, prevPoint!.y);
+    ctx.lineTo(currentPoint.x, currentPoint.y);
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
     ctx.stroke();
-
-    ctx.fillStyle = lineColor;
-    ctx.beginPath();
-    ctx.arc(startPoint.x, startPoint.y, 2, 0, 2 * Math.PI);
-    ctx.fill();
   }
 
   return (
     <canvas 
       ref={canvasRef}
-      onMouseDown={onMouseDown}
-      className="border border-lime-500"
+      onContextMenu={(e) => e.preventDefault()}
+      onMouseDown={(e) => { e.preventDefault(); onMouseDown(e)}}
+      className="w-full h-screen"
     ></canvas>)
 };
 

@@ -2,7 +2,7 @@ import Board from "@/components/board/Board";
 
 export default function Home() {
   return (
-    <main className="border">
+    <main className="">
       <Board/>
     </main>
   );

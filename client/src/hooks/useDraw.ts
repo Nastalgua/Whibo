@@ -1,52 +1,140 @@
 import { Draw, Point } from "@/types/drawing";
 import { useEffect, useRef, useState } from "react";
 
+type DrawingInfo = {
+  prevScaledPoint : Point,
+  scaledPoint : Point
+}
+
 export const useDraw = (onDraw: ({ ctx, prevPoint, currentPoint }: Draw) => void) => {
   const [mouseDown, setMouseDown] = useState(false);
+  
+  const isRightPressed = useRef(false);
+  const isLeftPressed = useRef(false);
+  
+  const drawings = useRef<DrawingInfo[]>([]);
+  
+  const scale = useRef(1);
+  const currPoint = useRef<Point | null>(null);
   const prevPoint = useRef<Point | null>(null);
+  const offset = useRef<Point>({x: 0, y:0});
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const onMouseDown = () => { console.log('stuff'); setMouseDown(true)};
+  const toScreen = (real: Point) : Point => {
+    return { x: (real.x + offset.current.x) * scale.current, y: (real.y + offset.current.y) * scale.current }
+  }
+
+  const toReal = (screen: Point) : Point => {
+    return { x: (screen.x / scale.current) - offset.current.x, y: (screen.y / scale.current) - offset.current.y }
+  }
+
+  const trueDimensions = () => {
+    return { 
+      width: canvasRef.current!.clientWidth / scale.current, 
+      height: canvasRef.current!.clientHeight / scale.current
+    }
+  }
+
+  const redrawCanvas = (canvasWidth: number = document.body.clientWidth, canvasHeight: number = document.body.clientHeight) => {
+    canvasRef.current!.width = canvasWidth;
+    canvasRef.current!.height = canvasHeight;
+
+    const ctx = canvasRef.current?.getContext('2d');
+
+    if (!ctx) { console.log("Missing canvas context..."); return; }
+
+    drawings.current.forEach((line) => {
+      const screenPrevScaledPoint = toScreen(line.prevScaledPoint);
+      const screenCurrScaledPoint = toScreen(line.scaledPoint);
+      onDraw({ ctx, prevPoint: screenPrevScaledPoint, currentPoint: screenCurrScaledPoint });
+    });
+  }
+
+  const onMouseDown = (e: React.MouseEvent) => {
+    if (e.button === 0) { // left mouse click
+      isLeftPressed.current = true;
+      isRightPressed.current = false;
+    }
+
+    if (e.button === 2) { // right mouse click
+      isRightPressed.current = true;
+      isLeftPressed.current = false;
+    }
+    if (!isRightPressed.current && !isLeftPressed.current) return;
+
+    setMouseDown(true);
+    currPoint.current = { x: e.pageX, y: e.pageY };
+    prevPoint.current = { x: e.pageX, y: e.pageY };
+  };
 
   useEffect(() => {
     const moveHandler = (e: MouseEvent) => {
       if (!mouseDown) return;
       
-      const currentPoint = computePointOnCanvas(e);
+      currPoint.current = { x: e.pageX, y: e.pageY };
+      const scaledPoint : Point = toReal(currPoint.current);
+      const prevScaledPoint : Point = toReal(prevPoint.current!);
+
       const ctx = canvasRef.current?.getContext('2d');
       
-      if (!currentPoint || !ctx) return;
+      if (!currPoint || !ctx) return;
 
-      onDraw({ ctx, currentPoint, prevPoint: prevPoint.current })
-    }
+      if (isLeftPressed.current) {
+        drawings.current.push({ prevScaledPoint, scaledPoint }); // might want to be a stack
+        onDraw({ ctx, currentPoint: currPoint.current, prevPoint: prevPoint.current });
+      }
 
-    const computePointOnCanvas = (e: MouseEvent) => {
-      const canvas = canvasRef.current;
+      if (isRightPressed.current) {
+        offset.current = {
+          x: offset.current.x + (currPoint.current.x - prevPoint.current!.x) / scale.current,
+          y: offset.current.y + (currPoint.current.y - prevPoint.current!.y) / scale.current,
+        }
 
-      if (!canvas) return;
+        redrawCanvas(document.body.clientWidth, document.body.clientHeight);
+      }
 
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-
-      return { x, y };
+      prevPoint.current = currPoint.current;
     }
 
     const upHandler = () => {
       setMouseDown(false);
+      isLeftPressed.current = false;
+      isRightPressed.current = false;
       prevPoint.current = null;
     }
 
+    const wheelHandler = (e: WheelEvent) => {
+      const deltaY = e.deltaY;
+      const scaleAmount = -deltaY / 500;
+      scale.current = scale.current * (1 + scaleAmount);
+
+      // zoom the page based on where the cursor is
+      var distX = e.pageX / canvasRef.current!.clientWidth;
+      var distY = e.pageY / canvasRef.current!.clientHeight;
+      
+      const tDim = trueDimensions();
+      const unitsZoomedX = tDim.width * scaleAmount;
+      const unitsZoomedY = tDim.height * scaleAmount;
+
+      const unitsAddLeft = unitsZoomedX * distX;
+      const unitsAddTop = unitsZoomedY * distY;
+      
+      offset.current = { x: offset.current.x - unitsAddLeft, y: offset.current.y - unitsAddTop };
+      redrawCanvas();
+    }
+
     canvasRef.current?.addEventListener('mousemove', moveHandler);
+    canvasRef.current?.addEventListener('wheel', wheelHandler);
     window.addEventListener('mouseup', upHandler);
 
     const canvasRefCurrent = canvasRef.current;
     return () => {
       canvasRefCurrent?.removeEventListener('mousemove', moveHandler);
+      canvasRefCurrent?.removeEventListener('wheel', wheelHandler);
       window.removeEventListener('mouseup', upHandler);
     }
   }, [onDraw]);
 
-  return { canvasRef, onMouseDown };
+  return { canvasRef, onMouseDown, redrawCanvas };
 }
