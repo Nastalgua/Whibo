@@ -6,7 +6,7 @@ type DrawingInfo = {
   scaledPoint : Point
 }
 
-export const useDraw = (onDraw: ({ ctx, prevPoint, currentPoint }: Draw) => void) => {
+export const useDraw = (onDraw: ({ ctx, prevPoint, currentPoint }: Draw, emit: boolean) => void) => {
   const [mouseDown, setMouseDown] = useState(false);
   
   const isRightPressed = useRef(false);
@@ -47,7 +47,7 @@ export const useDraw = (onDraw: ({ ctx, prevPoint, currentPoint }: Draw) => void
     drawings.current.forEach((line) => {
       const screenPrevScaledPoint = toScreen(line.prevScaledPoint);
       const screenCurrScaledPoint = toScreen(line.scaledPoint);
-      onDraw({ ctx, prevPoint: screenPrevScaledPoint, currentPoint: screenCurrScaledPoint });
+      onDraw({ ctx, prevPoint: screenPrevScaledPoint, currentPoint: screenCurrScaledPoint, color: '#fff' }, false);
     });
   }
 
@@ -68,21 +68,31 @@ export const useDraw = (onDraw: ({ ctx, prevPoint, currentPoint }: Draw) => void
     prevPoint.current = { x: e.pageX, y: e.pageY };
   };
 
+  /**
+   * Add newly created lines to the history of lines.
+   * @param line previous and current points of a line. 
+   */
+  const addNewLine = ({ currentPoint, prevPoint } : Draw) => {
+    const scaledPoint : Point = toReal(currentPoint);
+    const prevScaledPoint : Point = toReal(prevPoint!);
+
+    drawings.current.push({ prevScaledPoint, scaledPoint });
+  }
+
   useEffect(() => {
     const moveHandler = (e: MouseEvent) => {
       if (!mouseDown) return;
       
       currPoint.current = { x: e.pageX, y: e.pageY };
-      const scaledPoint : Point = toReal(currPoint.current);
-      const prevScaledPoint : Point = toReal(prevPoint.current!);
 
       const ctx = canvasRef.current?.getContext('2d');
       
       if (!currPoint || !ctx) return;
 
       if (isLeftPressed.current) {
-        drawings.current.push({ prevScaledPoint, scaledPoint }); // might want to be a stack
-        onDraw({ ctx, currentPoint: currPoint.current, prevPoint: prevPoint.current });
+        const line = { ctx, currentPoint: currPoint.current, prevPoint: prevPoint.current, color: '#fff' };
+        addNewLine(line); // might want to be a stack
+        onDraw(line, true);
       }
 
       if (isRightPressed.current) {
@@ -136,5 +146,5 @@ export const useDraw = (onDraw: ({ ctx, prevPoint, currentPoint }: Draw) => void
     }
   }, [onDraw]);
 
-  return { canvasRef, onMouseDown, redrawCanvas };
+  return { canvasRef, onMouseDown, redrawCanvas, addNewLine };
 }

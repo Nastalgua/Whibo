@@ -6,5 +6,12 @@ export type Point = {
 export type Draw = {
   ctx: CanvasRenderingContext2D,
   currentPoint: Point,
-  prevPoint: Point | null
+  prevPoint: Point | null,
+  color: string
+}
+
+export type SharedDraw = {
+  currentPoint: Point,
+  prevPoint: Point | null,
+  color: string
 }

@@ -84,7 +84,7 @@ const startListeners = (socket: Socket) => {
 
   // Draws line only in the room passed in query.
   socket.on("draw-line", ({ prevPoint, currentPoint, color } : DrawLine) => {
-    socket.in(roomId).emit('draw-line', { prevPoint, currentPoint, color })
+    socket.in(roomId).emit('draw-line', { prevPoint, currentPoint, color });
   });
 }
 

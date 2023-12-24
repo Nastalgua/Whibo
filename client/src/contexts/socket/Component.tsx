@@ -42,6 +42,11 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
     startListeners(); 
 
     sendHandshake();
+
+    return () => {
+      socket.off('user-connected');
+      socket.off('user-disconnected');
+    }
   }, []);
 
   const startListeners = () => {
