@@ -86,6 +86,10 @@ const startListeners = (socket: Socket) => {
   socket.on("draw-line", ({ prevPoint, currentPoint, color } : DrawLine) => {
     socket.in(roomId).emit('draw-line', { prevPoint, currentPoint, color });
   });
+
+  socket.on("undraw-line", ({ prevPoint } : DrawLine) => {
+    socket.in(roomId).emit('undraw-line', { prevPoint });
+  });
 }
 
 /**

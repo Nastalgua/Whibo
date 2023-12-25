@@ -1,18 +1,28 @@
+import ToolsContext from "@/contexts/tools/Context";
 import { Draw, Point } from "@/types/drawing";
-import { useEffect, useRef, useState } from "react";
+import { simplifyLine } from "@/utils/lineSmoothing";
+import { useContext, useEffect, useRef, useState } from "react";
 
-type DrawingInfo = {
+export type DrawingInfo = {
   prevScaledPoint : Point,
-  scaledPoint : Point
+  scaledPoint : Point,
+  originalPrevPoint : Point,
+  originalCurrPoint : Point
 }
 
-export const useDraw = (onDraw: ({ ctx, prevPoint, currentPoint }: Draw, emit: boolean) => void) => {
+export const useDraw = (
+  onDraw: ({ ctx, prevPoint, currentPoint }: Draw, emit: boolean) => void,
+  onUndraw: ({ ctx, prevPoint, currentPoint }: Draw, emit: boolean) => void
+) => {
   const [mouseDown, setMouseDown] = useState(false);
   
+  const { selectedTool } = useContext(ToolsContext).ToolsState;
+
   const isRightPressed = useRef(false);
   const isLeftPressed = useRef(false);
   
   const drawings = useRef<DrawingInfo[]>([]);
+  const tempDrawings = useRef<DrawingInfo[]>([]);
   
   const color = "#000000";
 
@@ -22,6 +32,11 @@ export const useDraw = (onDraw: ({ ctx, prevPoint, currentPoint }: Draw, emit: b
   const offset = useRef<Point>({x: 0, y:0});
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const arePointsInCircle = (center : Point, point : Point, radius : number) => {
+    const distance = Math.sqrt(Math.pow(point.x - center.x, 2) + Math.pow(point.y - center.y, 2));
+    return distance <= radius;
+  }
 
   const toScreen = (real: Point) : Point => {
     return { x: (real.x + offset.current.x) * scale.current, y: (real.y + offset.current.y) * scale.current }
@@ -66,9 +81,10 @@ export const useDraw = (onDraw: ({ ctx, prevPoint, currentPoint }: Draw, emit: b
     if (!isRightPressed.current && !isLeftPressed.current) return;
 
     setMouseDown(true);
+    tempDrawings.current = [];
     currPoint.current = { x: e.pageX, y: e.pageY };
     prevPoint.current = { x: e.pageX, y: e.pageY };
-  };
+  }
 
   /**
    * Add newly created lines to the history of lines.
@@ -78,7 +94,24 @@ export const useDraw = (onDraw: ({ ctx, prevPoint, currentPoint }: Draw, emit: b
     const scaledPoint : Point = toReal(currentPoint);
     const prevScaledPoint : Point = toReal(prevPoint!);
 
-    drawings.current.push({ prevScaledPoint, scaledPoint });
+    tempDrawings.current.push({ prevScaledPoint, scaledPoint, originalCurrPoint: currentPoint, originalPrevPoint: prevPoint! });
+  }
+
+  const removeLine = ({ currentPoint, prevPoint } : Draw) => {
+    drawings.current = drawings.current.filter((drawInfo : DrawingInfo) => {
+      return !arePointsInCircle(drawInfo.originalCurrPoint, currentPoint, 8) && !arePointsInCircle(drawInfo.originalPrevPoint, prevPoint!, 8);
+    });
+  }
+
+  const performTool = ({ ctx, currentPoint, prevPoint, color } : Draw) => {
+    const line: Draw = { ctx, currentPoint, prevPoint, color };
+    if (selectedTool === 'pen') {
+      addNewLine(line); // might want to be a stack
+      onDraw(line, true);
+    } else if (selectedTool === 'eraser') {
+      removeLine(line);
+      onUndraw(line, true);
+    }
   }
 
   useEffect(() => {
@@ -92,9 +125,7 @@ export const useDraw = (onDraw: ({ ctx, prevPoint, currentPoint }: Draw, emit: b
       if (!currPoint || !ctx) return;
 
       if (isLeftPressed.current) {
-        const line = { ctx, currentPoint: currPoint.current, prevPoint: prevPoint.current, color: color };
-        addNewLine(line); // might want to be a stack
-        onDraw(line, true);
+        performTool({ ctx, currentPoint: currPoint.current, prevPoint: prevPoint.current, color: color });
       }
 
       if (isRightPressed.current) {
@@ -111,6 +142,23 @@ export const useDraw = (onDraw: ({ ctx, prevPoint, currentPoint }: Draw, emit: b
 
     const upHandler = () => {
       setMouseDown(false);
+
+      // const points: Point[] = [];
+
+      // tempDrawings.current.forEach((draw : DrawingInfo) => {
+      //   points.push(draw.originalPrevPoint);
+      //   points.push(draw.originalCurrPoint);
+      // });
+
+      // const smoothedLines = simplifyLine(tempDrawings.current, 1.0);
+      // console.log(`Old point count: ${tempDrawings.current.length}`);
+      // console.log(`New point count: ${smoothedLines.length}`);
+      
+      // add simplifiedTempDrawings to all drawings
+      drawings.current = [...drawings.current, ...tempDrawings.current];
+
+      tempDrawings.current = [];
+
       isLeftPressed.current = false;
       isRightPressed.current = false;
       prevPoint.current = null;
@@ -146,7 +194,7 @@ export const useDraw = (onDraw: ({ ctx, prevPoint, currentPoint }: Draw, emit: b
       canvasRefCurrent?.removeEventListener('wheel', wheelHandler);
       window.removeEventListener('mouseup', upHandler);
     }
-  }, [onDraw]);
+  }, [onDraw, onUndraw]);
 
-  return { canvasRef, onMouseDown, redrawCanvas, addNewLine };
+  return { canvasRef, onMouseDown, redrawCanvas, addNewLine, removeLine };
 }
