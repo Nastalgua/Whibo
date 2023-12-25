@@ -4,9 +4,7 @@ import { PropsWithChildren, ReactNode, useEffect, useReducer, useRef } from "rea
 import { SocketContextProvider, SocketReducer, defaultSocketContextState } from "./Context";
 import { useSocket } from "@/hooks/useSocket";
 import { useParams } from "next/navigation";
-import { usePathname } from 'next/navigation';
 
-import { v4 as uuidv4 } from 'uuid';
 import { Socket } from "socket.io-client";
 import { IUser } from "@/types/user";
 

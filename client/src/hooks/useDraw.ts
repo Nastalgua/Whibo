@@ -14,6 +14,8 @@ export const useDraw = (onDraw: ({ ctx, prevPoint, currentPoint }: Draw, emit: b
   
   const drawings = useRef<DrawingInfo[]>([]);
   
+  const color = "#000000";
+
   const scale = useRef(1);
   const currPoint = useRef<Point | null>(null);
   const prevPoint = useRef<Point | null>(null);
@@ -47,7 +49,7 @@ export const useDraw = (onDraw: ({ ctx, prevPoint, currentPoint }: Draw, emit: b
     drawings.current.forEach((line) => {
       const screenPrevScaledPoint = toScreen(line.prevScaledPoint);
       const screenCurrScaledPoint = toScreen(line.scaledPoint);
-      onDraw({ ctx, prevPoint: screenPrevScaledPoint, currentPoint: screenCurrScaledPoint, color: '#fff' }, false);
+      onDraw({ ctx, prevPoint: screenPrevScaledPoint, currentPoint: screenCurrScaledPoint, color: color }, false);
     });
   }
 
@@ -90,7 +92,7 @@ export const useDraw = (onDraw: ({ ctx, prevPoint, currentPoint }: Draw, emit: b
       if (!currPoint || !ctx) return;
 
       if (isLeftPressed.current) {
-        const line = { ctx, currentPoint: currPoint.current, prevPoint: prevPoint.current, color: '#fff' };
+        const line = { ctx, currentPoint: currPoint.current, prevPoint: prevPoint.current, color: color };
         addNewLine(line); // might want to be a stack
         onDraw(line, true);
       }

@@ -50,11 +50,11 @@ const Board: React.FunctionComponent = () => {
   }
 
   return (
-    <canvas 
+    <canvas
       ref={canvasRef}
       onContextMenu={(e) => e.preventDefault()}
       onMouseDown={(e) => { e.preventDefault(); onMouseDown(e)}}
-      className="w-full h-screen"
+      className="w-full h-screen bg-dots"
     ></canvas>)
 };
 
