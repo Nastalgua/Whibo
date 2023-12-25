@@ -25,6 +25,7 @@ export const useDraw = (
   const tempDrawings = useRef<DrawingInfo[]>([]);
   
   const color = "#000000";
+  const eraserRadius = 16;
 
   const scale = useRef(1);
   const currPoint = useRef<Point | null>(null);
@@ -99,7 +100,7 @@ export const useDraw = (
 
   const removeLine = ({ currentPoint, prevPoint } : Draw) => {
     drawings.current = drawings.current.filter((drawInfo : DrawingInfo) => {
-      return !arePointsInCircle(drawInfo.originalCurrPoint, currentPoint, 8) && !arePointsInCircle(drawInfo.originalPrevPoint, prevPoint!, 8);
+      return !arePointsInCircle(drawInfo.originalCurrPoint, currentPoint, 8) && !arePointsInCircle(drawInfo.originalPrevPoint, prevPoint!, eraserRadius);
     });
   }
 
@@ -143,6 +144,8 @@ export const useDraw = (
     const upHandler = () => {
       setMouseDown(false);
 
+      // const ctx = canvasRef.current?.getContext('2d');
+
       // const points: Point[] = [];
 
       // tempDrawings.current.forEach((draw : DrawingInfo) => {
@@ -150,13 +153,33 @@ export const useDraw = (
       //   points.push(draw.originalCurrPoint);
       // });
 
-      // const smoothedLines = simplifyLine(tempDrawings.current, 1.0);
-      // console.log(`Old point count: ${tempDrawings.current.length}`);
-      // console.log(`New point count: ${smoothedLines.length}`);
+      // const smoothedPoints = simplifyLine(points, 1.0);
+      // console.log(`Old point count: ${points.length}`);
+      // console.log(`New point count: ${smoothedPoints.length}`);
+      // console.log(smoothedPoints);
       
-      // add simplifiedTempDrawings to all drawings
-      drawings.current = [...drawings.current, ...tempDrawings.current];
+      // const smoothedLine: DrawingInfo[] = []
+      // for (let i = 1; i < smoothedPoints.length; i += 2) {
+      //   const prevScaledPoint = toReal(smoothedPoints[i - 1]);
+      //   const scaledPoint = toReal(smoothedPoints[i]);
+      //   smoothedLine.push({ prevScaledPoint, scaledPoint, originalCurrPoint: smoothedPoints[i - 1], originalPrevPoint: smoothedPoints[i] });
+      // }
 
+      // if (smoothedPoints.length % 2 != 0) {
+      //   const scaledPoint = toReal(smoothedPoints[smoothedPoints.length - 1]);
+      //   smoothedLine.push({
+      //     prevScaledPoint: scaledPoint,
+      //     scaledPoint,
+      //     originalCurrPoint: smoothedPoints[smoothedPoints.length - 1],
+      //     originalPrevPoint: smoothedPoints[smoothedPoints.length - 1]
+      //   });
+      // }
+
+      // smoothedLine.forEach((line: DrawingInfo) => {
+      //   onDraw({ ctx: ctx!, prevPoint: line.prevScaledPoint, currentPoint: line.scaledPoint, color }, true);
+      // });
+
+      drawings.current = [...drawings.current, ...tempDrawings.current];
       tempDrawings.current = [];
 
       isLeftPressed.current = false;
@@ -196,5 +219,5 @@ export const useDraw = (
     }
   }, [onDraw, onUndraw]);
 
-  return { canvasRef, onMouseDown, redrawCanvas, addNewLine, removeLine };
+  return { canvasRef, onMouseDown, redrawCanvas, addNewLine, removeLine, eraserRadius };
 }

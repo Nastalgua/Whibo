@@ -7,7 +7,7 @@ import React, { useContext, useEffect } from "react";
 
 const Board: React.FunctionComponent = () => {
   const { socket } = useContext(SocketContext).SocketState;
-  const { canvasRef, onMouseDown, redrawCanvas, addNewLine, removeLine } = useDraw(createLine, deleteLine);
+  const { canvasRef, onMouseDown, redrawCanvas, addNewLine, removeLine, eraserRadius } = useDraw(createLine, deleteLine);
 
   useEffect(() => {
     if (!socket) return;
@@ -56,9 +56,7 @@ const Board: React.FunctionComponent = () => {
   function undrawLine({ ctx, prevPoint, currentPoint, color }: Draw) {
     ctx.globalCompositeOperation="destination-out";
     ctx.beginPath();
-    ctx.moveTo(prevPoint!.x, prevPoint!.y);
-    ctx.lineTo(currentPoint.x, currentPoint.y);
-    ctx.lineWidth = 8;
+    ctx.arc(currentPoint.x, currentPoint.y, eraserRadius, 0, 2 * Math.PI);
     ctx.stroke();
   }
 
