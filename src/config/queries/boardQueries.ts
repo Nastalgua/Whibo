@@ -1,0 +1,3 @@
+const getBoardsByUidQuery = "";
+
+export { getBoardsByUidQuery };
