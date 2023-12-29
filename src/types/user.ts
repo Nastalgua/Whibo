@@ -1,7 +1,8 @@
 export interface IUser {
   username: string,
   id: string,
-  createdAt: Date,
+  created_at: Date,
   email: string,
-  googleId: string
+  google_id: string,
+  hashed_password: string
 }

@@ -1,6 +1,5 @@
 import ToolsContext from "@/contexts/tools/Context";
 import { Draw, Point } from "@/types/drawing";
-import { simplifyLine } from "@/utils/lineSmoothing";
 import { useContext, useEffect, useRef, useState } from "react";
 
 export type DrawingInfo = {
