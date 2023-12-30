@@ -1,12 +1,23 @@
 "use client"
 
-import { useEffect } from "react";
+import requiredAuth from "@/components/protectedRoute/RequiredAuth";
 
-export default function Home() {
+import { logout } from "@/redux/features/auth-slice";
 
-  useEffect(() => {
+import { AppDispatch } from "@/redux/store";
+import { useDispatch } from "react-redux";
 
-  }, []);
+function Home() {
 
-  return (<div>Hello</div>);
+  const dispatch = useDispatch<AppDispatch>();
+
+  const onClick = async () => {
+    dispatch(logout());
+  }
+
+  return (
+    <button onClick={onClick}>Log Out</button>
+  );
 }
+
+export default requiredAuth(Home);

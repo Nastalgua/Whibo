@@ -1,4 +1,5 @@
 import { IUser } from "@/types/user";
+import { setCookie } from "cookies-next";
 import { createContext } from "react";
 
 export interface IAuthContextState {

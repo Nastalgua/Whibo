@@ -15,12 +15,6 @@ const AuthContextComponent: React.FunctionComponent<IAuthContextComponentProps> 
 
   if (user && !AuthState.user) AuthDispatch({ type: 'login', payload: user });
 
-  // const { loading, data } = useQuery(USER_SUCCESS);
-
-  // if (data && !AuthState.user) AuthDispatch({ type: 'login', payload: data.userSuccess as IUser })
-
-  // if (loading) return <></>
-
   return <AuthContextProvider value={{ AuthState, AuthDispatch }}>{ children }</AuthContextProvider>;
 }
 
