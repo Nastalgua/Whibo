@@ -1,7 +1,7 @@
-import { IUser } from "@/types/user";
+import { SocketUser } from "@/types/user";
 
 type UserItemProps = {
-  user: IUser
+  user: SocketUser
 }
 
 export default function UserItem({ user }: UserItemProps) {

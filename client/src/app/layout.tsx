@@ -1,11 +1,11 @@
 "use client"
 
-import { Inter } from 'next/font/google';
+import { Montserrat } from 'next/font/google';
 import './globals.css';
 import ReduxProvider from '@/redux/provider';
 import AuthWrapper from '@/components/auth/AuthWrapper';
 
-const inter = Inter({ subsets: ['latin'] });
+const montserrat = Montserrat({ weight: ['400'], subsets: ['latin'] });
 
 export default function RootLayout({
   children,
@@ -14,7 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={montserrat.className}>
         <ReduxProvider>
           <AuthWrapper>{children}</AuthWrapper>
         </ReduxProvider>

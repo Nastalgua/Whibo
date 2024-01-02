@@ -12,6 +12,7 @@ import { CLIENT_URL, COOKIE_KEY, PORT } from "./utils/secrets.js";
 /** Routes */
 import defaultRoute from "./routes/defaultRoute.js";
 import authRoute from "./routes/authRoute.js";
+import boardRoute from "./routes/boardRoute.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -34,6 +35,7 @@ startSocketServer(server);
 
 app.use('/', defaultRoute);
 app.use('/auth', authRoute);
+app.use('/boards', boardRoute);
 
 server.listen(PORT, () => {
   console.log(chalk.green(`🚀 Server is running on port ${PORT}.`));

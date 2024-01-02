@@ -15,6 +15,15 @@ const config: Config = {
       },
       colors: {
         'dark-jungle-green': '#222222'
+      },
+      gridTemplateColumns: {
+        'boards-gallery': 'repeat(auto-fill, minmax(100px, 1fr))'
+      },
+      gridAutoRows: {
+        'boards-gallery': '60px'
+      },
+      fontFamily: {
+        'khula': ['Khula']
       }
     },
   },

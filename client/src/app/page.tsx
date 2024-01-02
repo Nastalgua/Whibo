@@ -7,8 +7,7 @@ import { logout } from "@/redux/features/auth-slice";
 import { AppDispatch } from "@/redux/store";
 import { useDispatch } from "react-redux";
 
-function Home() {
-
+export default function Home() {
   const dispatch = useDispatch<AppDispatch>();
 
   const onClick = async () => {
@@ -16,8 +15,6 @@ function Home() {
   }
 
   return (
-    <button onClick={onClick}>Log Out</button>
+    <button onClick={onClick}>Default page.</button>
   );
 }
-
-export default requiredAuth(Home);

@@ -7,7 +7,7 @@ import { IUser } from '../types/user.js';
 
 const router = Router();
 
-const checkAuth = (req: Request, res: Response, next: NextFunction) => {
+export const checkAuth = (req: Request, res: Response, next: NextFunction) => {
   if (!req.user) {
     return res.status(401).json({ user: null });
   } else {

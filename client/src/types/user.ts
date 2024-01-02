@@ -5,3 +5,9 @@ export interface IUser {
   email: string,
   googleId: string
 }
+
+export type SocketUser = {
+  username: string;
+  uid: string;
+  socketId: string;
+}

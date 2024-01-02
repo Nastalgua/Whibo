@@ -76,7 +76,7 @@ const Board: React.FunctionComponent = () => {
         ref={canvasRef}
         onContextMenu={(e) => e.preventDefault()}
         onMouseDown={(e) => { e.preventDefault(); onMouseDown(e)}}
-        className="w-full h-full bg-dots overflow-scroll"
+        className="w-full h-full bg-slate-50 bg-dots overflow-scroll"
       ></canvas>
     </div>
   )

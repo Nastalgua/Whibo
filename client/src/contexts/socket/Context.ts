@@ -1,5 +1,5 @@
 import { IMessage } from "@/types/message";
-import { IUser } from "@/types/user";
+import { SocketUser } from "@/types/user";
 import { createContext } from "react";
 import { Socket } from "socket.io-client";
 
@@ -7,7 +7,7 @@ export interface ISocketContextState {
   socket: Socket | undefined;
   uid: string;
   rid: string;
-  users: IUser[];
+  users: SocketUser[];
   messages: IMessage[]
 }
 
@@ -20,7 +20,7 @@ export const defaultSocketContextState: ISocketContextState = {
 }
 
 export type TSocketContextActions = 'update_socket' | 'update_uid' | 'update_rid' | 'update_users' | 'update_messages';
-export type TSocketContextPayload = string | IUser[] | Socket | IMessage | IMessage[];
+export type TSocketContextPayload = string | SocketUser[] | Socket | IMessage | IMessage[];
 
 export interface ISocketContextActions {
   type: TSocketContextActions;
@@ -36,7 +36,7 @@ export const SocketReducer = (state: ISocketContextState, action: ISocketContext
     case 'update_uid':
       return { ...state, uid: action.payload as string };
     case 'update_users':
-      return { ...state, users: action.payload as IUser[] };
+      return { ...state, users: action.payload as SocketUser[] };
     case 'update_messages':
       return { ...state, messages: action.payload as IMessage[] };
     default:

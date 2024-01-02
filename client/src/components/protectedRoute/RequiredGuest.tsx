@@ -1,3 +1,5 @@
+"use client"
+
 import { useAppSelector } from "@/redux/store";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
@@ -9,7 +11,7 @@ export default function requiredGuest(Component: any) {
 
     useEffect(() => {
       if (loaded && isAuth) {
-        redirect('/');
+        redirect('/dashboard');
       }
     }, [isAuth, loaded]);
 

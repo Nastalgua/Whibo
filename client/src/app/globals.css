@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* @import url('https://fonts.googleapis.com/css2?family=Khula:wght@300;400;700&display=swap'); */
+
+@font-face {
+  font-family: 'Khula';
+  font-weight: 400;
+  ascent-override: 10%;
+  src: url('https://fonts.googleapis.com/css2?family=Khula&display=swap');
+}
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;

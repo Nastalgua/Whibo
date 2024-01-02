@@ -1,3 +1,5 @@
+"use client"
+
 import { useAppSelector } from "@/redux/store";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
@@ -10,7 +12,7 @@ export default function requiredAuth(Component: any) {
     useEffect(() => {
       if (loaded && !isAuth) {
         redirect('/login')
-      } 
+      }
     }, [isAuth, loaded]);
 
     if (!loaded || !isAuth) {
@@ -20,4 +22,3 @@ export default function requiredAuth(Component: any) {
     return <Component {...props} />;
   }
 };
-

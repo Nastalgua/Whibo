@@ -12,14 +12,13 @@ export const useUser = () => {
     const getUser = async () => {
       try {
         const res = await fetch("/api/v1/auth/");
-        dispatch(fullyLoaded());
-
         const user = (await res.json()).user;
         setUser(user);
-        
+        dispatch(fullyLoaded());
         if (user) { dispatch(login(user)); }
       } catch (err) {
         console.log(err);
+        dispatch(fullyLoaded());
       }
     }
 
