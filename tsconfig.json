@@ -1,13 +1,22 @@
 {
   "compilerOptions": {
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "baseUrl": "src",
-    "outDir": "dist",
-    "target": "es2022",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "target": "ESNext",
     "sourceMap": true,
-    "noImplicitAny": true,
-    "esModuleInterop": true
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "esModuleInterop": true,
+    "typeRoots": [
+      "./src/types",
+      "./node_modules/@types"
+    ]
   },
-  "include": ["src/**/*"]
+  "include": [
+    "src/**/*",
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
