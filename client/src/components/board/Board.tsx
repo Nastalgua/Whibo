@@ -2,12 +2,13 @@
 
 import SocketContext from "@/contexts/socket/Context";
 import { useDraw } from "@/hooks/useDraw";
+import { IBoard } from "@/types/board";
 import { Draw, SharedDraw } from "@/types/drawing";
 import React, { useContext, useEffect } from "react";
 
-const Board: React.FunctionComponent = () => {
+const Board = ({ board, boardId }: { board: IBoard, boardId: string }) => {
   const { socket } = useContext(SocketContext).SocketState;
-  const { canvasRef, onMouseDown, redrawCanvas, addNewLine, removeLine, eraserRadius } = useDraw(createLine, deleteLine);
+  const { canvasRef, onMouseDown, redrawCanvas, addNewLine, removeLine, eraserRadius } = useDraw(createLine, deleteLine, boardId);
 
   useEffect(() => {
     if (!socket) return;
@@ -15,6 +16,12 @@ const Board: React.FunctionComponent = () => {
     const ctx = canvasRef.current?.getContext('2d');
     canvasRef.current!.width = document.body.clientWidth;
     canvasRef.current!.height = document.body.clientHeight;
+
+    var image = new Image();
+    image.src = board.content;
+    image.onload = function() {
+      ctx!.drawImage(image, 0, 0);
+    };
 
     window.addEventListener('resize', canvasResize);
 
@@ -40,6 +47,14 @@ const Board: React.FunctionComponent = () => {
   }, [socket]);
 
   const canvasResize = () => {
+    const ctx = canvasRef.current?.getContext('2d');
+
+    var image = new Image();
+    image.src = board.content;
+    image.onload = function() {
+      ctx!.drawImage(image, 0, 0);
+    };
+
     redrawCanvas();
   }
 

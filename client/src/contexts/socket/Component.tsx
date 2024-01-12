@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 
 import { Socket } from "socket.io-client";
 import { IUser } from "@/types/user";
+import { useUser } from "@/hooks/useUser";
 
 export interface ISocketContextComponentProps extends PropsWithChildren {
   children: ReactNode
@@ -24,7 +25,6 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
     autoConnect: false,
     query: { 
       rid, 
-      // TODO: replace empty strings with user authentication
       uid: "",
       uUsername: "",
     }

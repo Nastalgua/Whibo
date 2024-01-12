@@ -36,25 +36,6 @@ export default function Boards() {
     getBoards();
   }, []);
 
-  /*
-  const boards: IBoard[] = [
-    {
-      id: 'Something',
-      title: 'Untitled Board',
-      userId: 'me',
-      content: '<somelink here>',
-      createdAt: new Date()
-    },
-    {
-      id: 'Somethingsdsda',
-      title: 'Untitled Board 2',
-      userId: 'me',
-      content: '<somelink here>',
-      createdAt: new Date()
-    }
-  ];
-  */
-
   const createBoard = async () => {
     const queryParams = {
       user_id: user!.id,

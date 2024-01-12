@@ -15,7 +15,7 @@ export default function BoardItem({ board }: IBoardItemProps) {
 
   return (
     <div className="bg-white px-3 flex flex-col justify-center w-full h-full shadow-sm rounded-lg col-[span_2_/_auto] row-[span_2_/_auto] select-none" onClick={openBoard}>
-      <h2>{board.title}</h2>
+      <h2 className="truncate">{board.title}</h2>
     </div>
   )
 }

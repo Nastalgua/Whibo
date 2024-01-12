@@ -11,7 +11,8 @@ export type DrawingInfo = {
 
 export const useDraw = (
   onDraw: ({ ctx, prevPoint, currentPoint }: Draw, emit: boolean) => void,
-  onUndraw: ({ ctx, prevPoint, currentPoint }: Draw, emit: boolean) => void
+  onUndraw: ({ ctx, prevPoint, currentPoint }: Draw, emit: boolean) => void,
+  boardId: string
 ) => {
   const [mouseDown, setMouseDown] = useState(false);
   
@@ -143,47 +144,41 @@ export const useDraw = (
     const upHandler = () => {
       setMouseDown(false);
 
-      // const ctx = canvasRef.current?.getContext('2d');
-
-      // const points: Point[] = [];
-
-      // tempDrawings.current.forEach((draw : DrawingInfo) => {
-      //   points.push(draw.originalPrevPoint);
-      //   points.push(draw.originalCurrPoint);
-      // });
-
-      // const smoothedPoints = simplifyLine(points, 1.0);
-      // console.log(`Old point count: ${points.length}`);
-      // console.log(`New point count: ${smoothedPoints.length}`);
-      // console.log(smoothedPoints);
-      
-      // const smoothedLine: DrawingInfo[] = []
-      // for (let i = 1; i < smoothedPoints.length; i += 2) {
-      //   const prevScaledPoint = toReal(smoothedPoints[i - 1]);
-      //   const scaledPoint = toReal(smoothedPoints[i]);
-      //   smoothedLine.push({ prevScaledPoint, scaledPoint, originalCurrPoint: smoothedPoints[i - 1], originalPrevPoint: smoothedPoints[i] });
-      // }
-
-      // if (smoothedPoints.length % 2 != 0) {
-      //   const scaledPoint = toReal(smoothedPoints[smoothedPoints.length - 1]);
-      //   smoothedLine.push({
-      //     prevScaledPoint: scaledPoint,
-      //     scaledPoint,
-      //     originalCurrPoint: smoothedPoints[smoothedPoints.length - 1],
-      //     originalPrevPoint: smoothedPoints[smoothedPoints.length - 1]
-      //   });
-      // }
-
-      // smoothedLine.forEach((line: DrawingInfo) => {
-      //   onDraw({ ctx: ctx!, prevPoint: line.prevScaledPoint, currentPoint: line.scaledPoint, color }, true);
-      // });
-
       drawings.current = [...drawings.current, ...tempDrawings.current];
       tempDrawings.current = [];
 
       isLeftPressed.current = false;
       isRightPressed.current = false;
       prevPoint.current = null;
+
+      // save everything in the canvas
+      const imgData = canvasRef.current?.toDataURL("image/png") as string;
+      updateDatabase(imgData);
+    }
+
+    const updateDatabase = async (imgData : string) => {
+      const queryParams = {
+        board_id: boardId,
+        content: imgData
+      }
+
+      try {
+        const res = await fetch(`/api/v1/boards/update-board`, { 
+          method: 'POST',
+          body: JSON.stringify(queryParams),
+          headers: {
+            "Content-Type": "application/json",
+          }
+        });
+        const updated: boolean = (await res.json()).updated;
+  
+        if (updated) {
+          // console.log("Updated the board in database.");
+        }
+        
+      } catch (err) {
+        console.log(err);
+      }
     }
 
     const wheelHandler = (e: WheelEvent) => {

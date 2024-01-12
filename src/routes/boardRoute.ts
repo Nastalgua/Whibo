@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { NextFunction, Router, Response, Request } from "express";
 import { checkAuth } from "./authRoute";
 
 import pool from '../config/db';
@@ -7,6 +7,7 @@ import BoardQueries from '../config/queries/boardQueries';
 import { IBoard } from "../types/board";
 
 import { validate } from 'uuid';
+import bodyParser from 'body-parser';
 
 const router = Router();
 
@@ -25,6 +26,22 @@ router.post('/create-board', checkAuth, async (req, res) => {
   }
 
   res.status(200).json({ board: filteredBoard });
+});
+
+router.post('/create-temp-board', async (req, res) => {
+  const board_id: string = req.query.board_id as string;
+  const content = ""; // default is empty content
+  const title = "Untitled Board"
+
+  const dataToCache = {
+    id : board_id,
+    title,
+    content,
+    createdAt: Date.now(),
+    userId: ""
+  };
+
+  return res.status(200).json({ board: dataToCache })
 });
 
 router.get('/own-boards', checkAuth, async (req, res) => {
@@ -67,6 +84,30 @@ router.get('/board-info', async (req, res) => {
   }
 
   return res.status(200).json({ board: filteredBoard });
+});
+
+router.post('/update-board', bodyParser.json(), async (req, res) => {
+  const board_id = req.body.board_id as string;
+  const content = req.body.content;
+
+  try {
+    (await pool.query(BoardQueries.updateBoardContent, [board_id, content]));
+    return res.status(200).json({ updated: true });
+  } catch (e) {
+    return res.status(200).json({ updated: false });
+  }  
+});
+
+router.post('/update-title', bodyParser.json(), async (req, res) => {
+  const board_id = req.body.board_id as string;
+  const title = req.body.title;
+
+  try {
+    (await pool.query(BoardQueries.updateBoardTitle, [board_id, title]));
+    return res.status(200).json({ updated: true });
+  } catch (e) {
+    return res.status(200).json({ updated: false });
+  }  
 });
 
 export default router;

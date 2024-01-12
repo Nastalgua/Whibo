@@ -10,6 +10,6 @@ export default function UserItem({ user }: UserItemProps) {
   }
 
   return (
-    <div className="py-0.5 px-2 bg-red-200 rounded-sm">{formatText(user.username)}</div>
+    <div className="py-0.5 px-2 bg-sky-600 rounded-sm text-white">{formatText(user.username)}</div>
   );
 }

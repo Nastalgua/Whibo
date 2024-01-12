@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from 'next/navigation';
 
 import Board from "@/components/board/Board";
@@ -9,8 +9,13 @@ import SocketContextComponent from "@/contexts/socket/Component";
 import ToolContextComponent from "@/contexts/tools/Component";
 import { IBoard } from "@/types/board";
 
+import { useRouter } from 'next/navigation';
+
 export default function BoardPage() {
   const params = useParams();
+  const router = useRouter();
+
+  const [board, setBoard] = useState<IBoard | null>(null);
 
   useEffect(() => {
     const getBoard = async () => {
@@ -27,10 +32,10 @@ export default function BoardPage() {
 
         if (board) {
           console.log("This board exists already.");
-          console.log(board);
+          setBoard(board);
         } else {
           console.log("Couldn't find a existing board");
-          console.log(board);
+          router.push('/dashboard');
         }
       } catch (err) {
         console.log(err);
@@ -44,10 +49,15 @@ export default function BoardPage() {
   return (
     <SocketContextComponent>
       <ToolContextComponent>
-        <main>
-          <BoardOverlay />
-          <Board />
+        {!board ? <div className="w-full h-screen bg-white absolute z-20 flex justify-center items-center">
+          <div>
+            Loading...
+          </div>
+        </div> : <main>
+          <BoardOverlay board={board} />
+          <Board board={board} boardId={params.rid as string} />
         </main>
+        }
       </ToolContextComponent>
     </SocketContextComponent>
   );
