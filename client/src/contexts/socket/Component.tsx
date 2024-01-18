@@ -6,7 +6,7 @@ import { useSocket } from "@/hooks/useSocket";
 import { useParams } from "next/navigation";
 
 import { Socket } from "socket.io-client";
-import { IUser } from "@/types/user";
+import { IUser, SocketUser } from "@/types/user";
 import { useUser } from "@/hooks/useUser";
 
 export interface ISocketContextComponentProps extends PropsWithChildren {
@@ -48,17 +48,17 @@ const SocketContextComponent: React.FunctionComponent<ISocketContextComponentPro
   }, []);
 
   const startListeners = () => {
-    socket.on("user-connected", (users: IUser[]) => {
+    socket.on("user-connected", (users: SocketUser[]) => {
       SocketDispatch({ type: 'update_users', payload: users });
     });
 
-    socket.on("user-disconnected", (users: IUser[]) => {
+    socket.on("user-disconnected", (users: SocketUser[]) => {
       SocketDispatch({ type: 'update_users', payload: users });
     });
   }
 
   const sendHandshake = () => {
-    socket.emit("handshake", (uid: string, users: IUser[]) => {
+    socket.emit("handshake", (uid: string, users: SocketUser[]) => {
       // if someone anonymous joins the server, we still need to give that person a user id
       SocketDispatch({ type: 'update_uid', payload: uid });
 

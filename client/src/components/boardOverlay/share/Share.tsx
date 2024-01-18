@@ -10,7 +10,6 @@ export default function Share() {
   const { users } = useContext(SocketContext).SocketState
 
   const share = () => {
-    console.log(users);
     console.log("Missing share implementation.");
   }
 
