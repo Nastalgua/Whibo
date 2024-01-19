@@ -1,10 +1,10 @@
-import { NextFunction, Router, Response, Request } from "express";
-import { checkAuth } from "./authRoute";
+import { Router } from "express";
+import { checkAuth } from "./authRoute.js";
 
-import pool from '../config/db';
+import pool from '../config/db.js';
 
-import BoardQueries from '../config/queries/boardQueries';
-import { IBoard } from "../types/board";
+import BoardQueries from '../config/queries/boardQueries.js';
+import { IBoard } from "../types/board.js";
 
 import { validate } from 'uuid';
 import bodyParser from 'body-parser';
