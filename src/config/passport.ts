@@ -2,7 +2,7 @@ import passport from 'passport';
 import chalk from 'chalk';
 import { generateUsername } from 'unique-username-generator';
 
-import pool from '../config/db';
+import pool from './db';
 
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../utils/secrets.js';
