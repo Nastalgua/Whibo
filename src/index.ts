@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import passport from "passport";
 import cookieSession from "cookie-session";
 import cors from 'cors';
+import path from 'path';
 
 import './config/passport.js';
 import { startSocketServer } from "./utils/socket.js";
