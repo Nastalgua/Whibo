@@ -18,3 +18,10 @@ Collaborative whiteboard built with the HTML canvas. Get started by creating an 
 - Socket.io [UDP communication]
 - PostgreSQL [Database]
 - Passport [User authentication]
+
+**Examples**
+*Drawing*
+![](readme/drawing.gif)
+
+*Collaborate*
+![](readme/collaborate.gif)
