@@ -20,6 +20,7 @@ Collaborative whiteboard built with the HTML canvas. Get started by creating an 
 - Passport [User authentication]
 
 **Examples**
+
 *Drawing*
 ![](readme/drawing.gif)
 
